@@ -9,8 +9,10 @@ import requests
 app = Flask(__name__)
 
 # Path to store model locally after download
-MODEL_PATH = "best.pt"
 MODEL_URL = "https://drive.google.com/uc?export=download&id=1lbpZXbKrgGT0-UN6xc357K_nsxqgplC3"
+MODEL_PATH = "best.pt"
+
+
 
 def download_model_if_needed():
     if not os.path.exists(MODEL_PATH):
