@@ -3,8 +3,25 @@ from flask import request, Response, Flask
 from waitress import serve
 from PIL import Image
 import json
+import os
+import requests
 
 app = Flask(__name__)
+
+# Path to store model locally after download
+MODEL_PATH = "best.pt"
+MODEL_URL = "https://drive.google.com/uc?export=download&id=1lbpZXbKrgGT0-UN6xc357K_nsxqgplC3"
+
+def download_model_if_needed():
+    if not os.path.exists(MODEL_PATH):
+        print("Downloading model from Google Drive...")
+        r = requests.get(MODEL_URL)
+        with open(MODEL_PATH, "wb") as f:
+            f.write(r.content)
+        print("Model downloaded successfully!")
+
+download_model_if_needed()  # Download when server starts
+model = YOLO(MODEL_PATH)    # Load model once globally
 
 @app.route("/")
 def root():
@@ -18,7 +35,6 @@ def detect():
     return Response(json.dumps(boxes), mimetype='application/json')
 
 def detect_objects_on_image(buf):
-    model = YOLO("C:/Users/hp/MoonCraters/runs/detect/train/weights/best.pt")  # Ensure this points to your moon crater model
     results = model.predict(buf)
     result = results[0]
     output = []
@@ -32,4 +48,3 @@ def detect_objects_on_image(buf):
 if __name__ == "__main__":
     print("Server running at http://localhost:8080")
     serve(app, host='0.0.0.0', port=8080)
-
