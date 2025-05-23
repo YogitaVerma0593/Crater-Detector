@@ -5,24 +5,17 @@ from PIL import Image
 import json
 import os
 import requests
+import gdown
 
 app = Flask(__name__)
 
-# Path to store model locally after download
-MODEL_URL = "https://drive.google.com/uc?export=download&id=1lbpZXbKrgGT0-UN6xc357K_nsxqgplC3"
 MODEL_PATH = "best.pt"
+GOOGLE_DRIVE_ID = "1lbpZXbKrgGT0-UN6xc357K_nsxqgplC3"
 
-
-
-def download_model_if_needed():
-    if not os.path.exists(MODEL_PATH):
-        print("Downloading model from Google Drive...")
-        r = requests.get(MODEL_URL)
-        with open(MODEL_PATH, "wb") as f:
-            f.write(r.content)
-        print("Model downloaded successfully!")
-
-download_model_if_needed()  # Download when server starts
+# Download model if it doesn't exist
+if not os.path.exists(MODEL_PATH):
+    url = f"https://drive.google.com/uc?id={GOOGLE_DRIVE_ID}"
+    gdown.download(url, MODEL_PATH, quiet=False)
 model = YOLO(MODEL_PATH)    # Load model once globally
 
 @app.route("/")
